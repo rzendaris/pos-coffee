@@ -61,7 +61,7 @@ class UserManagementController extends Controller
     public function mainUser()
     {
         try{
-            $user = User::where('status', 1)->get();
+            $user = User::where('branch_id', Auth::user()->branch_id)->whereIn('role', [2,3,4,5])->where('status', 1)->get();
             $no = 1;
             foreach($user as $page){
                 $page->no = $no;
@@ -73,9 +73,15 @@ class UserManagementController extends Controller
                 }
 
                 if($page->role == 1){
-                    $page->role_name = 'Admin';
-                } else {
+                    $page->role_name = 'Super Admin';
+                } else if($page->role == 2) {
+                    $page->role_name = 'Supervisor';
+                } else if($page->role == 3) {
                     $page->role_name = 'Cashier';
+                } else if($page->role == 4) {
+                    $page->role_name = 'Cheff';
+                } else if($page->role == 5) {
+                    $page->role_name = 'Barista';
                 }
 
                 $branch_select = Branch::where('id', $page->branch_id)->first();
@@ -114,15 +120,11 @@ class UserManagementController extends Controller
 
     public function postUser(Request $request){
         try{
-            $branch_id = 0;
-            if($request->role == 2){
-                $branch_id = $request->branch_id;
-            }
             $user = new User([
                 'name' => $request->get('name'),
                 'email' => $request->get('email'),
                 'role' => $request->get('role'),
-                'branch_id' => $branch_id,
+                'branch_id' => $request->branch_id,
                 'password' => bcrypt($request->get('password')),
                 'created_by' => Auth::user()->name
             ]);
@@ -138,10 +140,6 @@ class UserManagementController extends Controller
 
     public function updateUser(Request $request){
         try{
-            $branch_id = 0;
-            if($request->role == 2){
-                $branch_id = $request->branch_id;
-            }
             $user = User::where('id', $request->id)->update([
                 'name' => $request->get('name'),
                 'email' => $request->get('email'),

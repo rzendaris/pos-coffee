@@ -91,7 +91,7 @@
                     <tr>
                       <td>{{ $page->no }}</td>
                       <td>{{ $page->created_at }}</td>
-                      <td><a href="order-list/cetak-pdf/{{ $page->id }}" class="btn btn-primary" target="_blank">{{ $page->transaction_number }}</a></td>
+                      <td><a href="#" class="btn btn-primary">{{ $page->transaction_number }}</a></td>
                       <td>{{ $page->branch->branch_name }}</td>
                       <td>{{ number_format($page->total_price) }}</td>
                       <td>{{ number_format($page->total_amount_paid) }}</td>

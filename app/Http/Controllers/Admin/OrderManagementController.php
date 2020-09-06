@@ -36,7 +36,7 @@ class OrderManagementController extends Controller
     public function allOrder()
     {
         try{
-            $data = Transaction::with(['branch', 'transaction_detail', 'transaction_detail.product'])->where('status','!=', 3)->orderBy('id', 'desc')->get();
+            $data = Transaction::with(['branch', 'transaction_detail', 'transaction_detail.product'])->where('status','!=', 3)->where('branch_id', Auth::user()->branch_id)->orderBy('id', 'desc')->get();
             $no = 1;
             foreach($data as $page){
                 $page->no = $no;
@@ -68,7 +68,7 @@ class OrderManagementController extends Controller
     public function orderRetur()
     {
         try{
-            $data = Transaction::with(['branch', 'customer', 'transaction_detail', 'transaction_detail.product'])->where('status', 3)->orderBy('id', 'desc')->get();
+            $data = Transaction::with(['branch', 'customer', 'transaction_detail', 'transaction_detail.product'])->where('status', 3)->where('branch_id', Auth::user()->branch_id)->orderBy('id', 'desc')->get();
             $no = 1;
             foreach($data as $page){
                 $page->no = $no;
@@ -303,21 +303,21 @@ class OrderManagementController extends Controller
     public function undeliveredOrder()
     {
         try{
-            $data = Transaction::with(['branch', 'transaction_detail', 'transaction_detail.product'])->where('is_delivered', 2)->orderBy('id', 'desc')->get();
+            $data = Transaction::with(['branch', 'transaction_detail', 'transaction_detail.product'])->where('is_delivered', 2)->where('branch_id', Auth::user()->branch_id)->orderBy('id', 'desc')->get();
             $no = 1;
             foreach($data as $page){
                 $page->no = $no;
 
                 if($page->status == 1){
-                    $page->status_name = 'Paid';
+                    $page->status_name = 'Dibayar';
                 } else {
-                    $page->status_name = 'Not Paid';
+                    $page->status_name = 'Belum Dibayar';
                 }
 
                 if($page->is_delivered == 1){
-                    $page->deliver_name = 'Delivered';
+                    $page->deliver_name = 'Terkirim';
                 } else {
-                    $page->deliver_name = 'Not Delivered';
+                    $page->deliver_name = 'Belum dikirim';
                 }
 
                 $no++;
@@ -335,21 +335,21 @@ class OrderManagementController extends Controller
     public function deliveredOrderPos()
     {
         try{
-            $data = Transaction::with(['branch', 'transaction_detail', 'transaction_detail.product'])->where('is_delivered', 1)->orderBy('id', 'desc')->get();
+            $data = Transaction::with(['branch', 'transaction_detail', 'transaction_detail.product'])->where('branch_id', Auth::user()->branch_id)->where('is_delivered', 1)->orderBy('id', 'desc')->get();
             $no = 1;
             foreach($data as $page){
                 $page->no = $no;
 
                 if($page->status == 1){
-                    $page->status_name = 'Paid';
+                    $page->status_name = 'Dibayar';
                 } else {
-                    $page->status_name = 'Not Paid';
+                    $page->status_name = 'Belum Dibayar';
                 }
 
                 if($page->is_delivered == 1){
-                    $page->deliver_name = 'Delivered';
+                    $page->deliver_name = 'Terkirim';
                 } else {
-                    $page->deliver_name = 'Not Delivered';
+                    $page->deliver_name = 'Belum dikirim';
                 }
 
                 $no++;

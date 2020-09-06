@@ -87,6 +87,18 @@ Route::middleware('auth')->group(function() {
     Route::get('order-delivered', 'Admin\OrderManagementController@deliveredOrderPos');
 
     /**
+     * Chef Management
+     */
+    Route::get('chef-order-undelivered', 'Chef\ChefManagementController@undeliveredOrder');
+    Route::post('chef-update-order', 'Chef\ChefManagementController@updateOrder');
+
+    /**
+     * Barista Management
+     */
+    Route::get('barista-order-undelivered', 'Barista\BaristaManagementController@undeliveredOrder');
+    Route::post('barista-update-order', 'Barista\BaristaManagementController@updateOrder');
+
+    /**
      * Report Management
      */
     Route::get('report-management', 'Admin\ReportManagementController@mainReport');

@@ -15,6 +15,7 @@ use App\Model\Tables\Product;
 use App\Model\Tables\Transaction;
 use App\Model\Tables\TransactionDetail;
 use App\Model\Tables\ProductCategory;
+use App\Model\Tables\SeatTable;
 
 class PosManagementController extends Controller
 {
@@ -25,7 +26,6 @@ class PosManagementController extends Controller
      */
     public function __construct()
     {
-        //
     }
 
     /**
@@ -37,9 +37,10 @@ class PosManagementController extends Controller
     {
         try{
             $customer = Customer::with(['branch'])->get();
-            $product = Product::where('status', 1)->get();
-            $count_product = Product::where('status', 1)->count();
-            $product_category = ProductCategory::where('status', 1)->get();
+            $product = Product::where('status', 1)->where('branch_id', Auth::user()->branch_id)->get();
+            $count_product = Product::where('status', 1)->where('branch_id', Auth::user()->branch_id)->count();
+            $product_category = ProductCategory::where('status', 1)->where('branch_id', Auth::user()->branch_id)->get();
+            $seat_table = SeatTable::where('branch_id', Auth::user()->branch_id)->get();
             $no = 1;
             foreach($customer as $page){
                 $page->no = $no;
@@ -65,7 +66,8 @@ class PosManagementController extends Controller
                 "customer" => $customer,
                 "product" => $product,
                 "count" => $count_product,
-                "product_category" => $product_category
+                "product_category" => $product_category,
+                "seat_table" => $seat_table
             );
             return view('welcome')->with('data', $data);
         
@@ -151,7 +153,7 @@ class PosManagementController extends Controller
                     'total_price' => 0,
                     'total_amount_paid' => 0,
                     'is_delivered' => 2,
-                    'status' => 1,
+                    'status' => $request->paid_status,
                     'created_by' => Auth::user()->name
                 ]);
                 $transaction->save();
@@ -172,6 +174,7 @@ class PosManagementController extends Controller
                             'unit_price' => $get_product->price * (int)$qty_form[$i],
                             'ppn' => 0,
                             'total_price' => ($get_product->price * (int)$qty_form[$i]) + ($get_product->price * (int)$qty_form[$i]),
+                            'is_delivered' => 2,
                             'status' => 1,
                             'created_by' => Auth::user()->name
                         ]);
@@ -188,6 +191,11 @@ class PosManagementController extends Controller
                     'total_price' => $total_price + $total_ppn,
                     'total_amount_paid' => $total_price + $total_ppn
                 ]);
+                if($request->seat_table != ""){
+                    SeatTable::where('branch_id', Auth::user()->branch_id)
+                        ->where('seat_no', $request->seat_table)
+                        ->update(['status' => 2]);
+                }
 
             }
 

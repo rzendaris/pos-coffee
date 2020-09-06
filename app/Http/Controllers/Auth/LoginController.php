@@ -27,7 +27,18 @@ class LoginController extends Controller
      *
      * @var string
      */
-    protected $redirectTo = '/';
+    // protected $redirectTo = '/';
+    protected function authenticated(Request $request, $user)
+    {
+        $redirectTo = "/";
+        if (env('DEPLOYMENT_ENV') == 'CHEFF'){
+            $redirectTo = "/chef-order-undelivered";
+        } else if (env('DEPLOYMENT_ENV') == 'BARISTA'){
+            $redirectTo = "/barista-order-undelivered";
+        };
+
+        return redirect($redirectTo);
+    }
 
     /**
      * Create a new controller instance.

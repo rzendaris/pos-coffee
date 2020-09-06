@@ -54,12 +54,12 @@
         <div class="container-fluid">
 
           <!-- Page Heading -->
-          <h1 class="h3 mb-2 text-gray-800">Undelivered Order</h1>
+          <h1 class="h3 mb-2 text-gray-800">Pesanan Menunggu</h1>
 
           <!-- DataTales Example -->
           <div class="card shadow mb-4">
             <div class="card-header py-3">
-              <h6 class="m-0 font-weight-bold text-primary">List Undelivered Order</h6>
+              <h6 class="m-0 font-weight-bold text-primary">Daftar Pesanan Menunggu</h6>
             </div>
             <div class="card-body">
               <div class="table-responsive">
@@ -67,14 +67,14 @@
                   <thead>
                     <tr>
                       <th>No</th>
-                      <th>Date</th>
-                      <th>No. Order</th>
-                      <th>Branches</th>
-                      <th>Total Price</th>
-                      <th>Amount Paid</th>
-                      <th>Change</th>
-                      <th>Payment Status</th>
-                      <th>Action</th>
+                      <th>Tanggal</th>
+                      <th>No. Pesanan</th>
+                      <th>Cabang</th>
+                      <th>Total Harga</th>
+                      <th>Jumlah Pembayaran</th>
+                      <th>Kembalian</th>
+                      <th>Status Pembayaran</th>
+                      <th>Aksi</th>
                     </tr>
                   </thead>
                   <!-- <tfoot>
@@ -91,7 +91,7 @@
                     <tr>
                       <td>{{ $page->no }}</td>
                       <td>{{ $page->created_at }}</td>
-                      <td><a href="order-list/cetak-pdf/{{ $page->id }}" class="btn btn-primary" target="_blank">{{ $page->transaction_number }}</a></td>
+                      <td><a href="#" class="btn btn-primary">{{ $page->transaction_number }}</a></td>
                       <td>{{ $page->branch->branch_name }}</td>
                       <td>{{ number_format($page->total_price) }}</td>
                       <td>{{ number_format($page->total_amount_paid) }}</td>
@@ -102,7 +102,7 @@
                         <div class="row">
                           <div class="col-md-12">
                             <button type="button" class="btn btn-success btn-block" data-toggle="modal" data-target="#editModal{{ $page->id }}">
-                              <!-- <i class="fas fa-fw fa-info" style="margin-left:-6px"></i> --> Delivered
+                              <!-- <i class="fas fa-fw fa-info" style="margin-left:-6px"></i> --> Terkirim
                             </button>
                           </div>
                         </div>
@@ -111,7 +111,7 @@
                         <div class="row">
                           <div class="col-md-12">
                             <button type="button" class="btn btn-danger btn-block" data-toggle="modal" data-target="#editModal{{ $page->id }}">
-                              <!-- <i class="fas fa-fw fa-info" style="margin-left:-6px"></i> --> Cancelled
+                              <!-- <i class="fas fa-fw fa-info" style="margin-left:-6px"></i> --> Dibatalkan
                             </button>
                           </div>
                         </div>
@@ -155,7 +155,7 @@
             <div class="modal-dialog modal-primary" role="document">
               <div class="modal-content">
                 <div class="modal-header">
-                  <h4 class="modal-title">Detail Order</h4>
+                  <h4 class="modal-title">Informasi Pesanan</h4>
                   <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">×</span>
                   </button>
@@ -164,13 +164,13 @@
                   <div class="row">
                     <div class="col-md-6">
                       <div class="form-group">
-                        <label for="exampleInputPassword1">Order Number</label>
+                        <label for="exampleInputPassword1">Nomor Pesanan</label>
                         <input type="text" class="form-control" name="price" value="{{ $page->transaction_number }}" placeholder="" readonly required />
                       </div>
                     </div>
                     <div class="col-md-6">
                       <div class="form-group">
-                        <label for="exampleInputEmail1">Order Date</label>
+                        <label for="exampleInputEmail1">Tanggal Pesanan</label>
                         <input type="text" class="form-control" name="stock" value="{{ $page->created_at }}" placeholder="" readonly required />
                       </div>
                     </div>
@@ -180,10 +180,11 @@
                       <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
                         <thead>
                           <tr>
-                            <th>Product Name</th>
-                            <th>Unit Price</th>
-                            <th>Qty</th>
+                            <th>Nama Produk</th>
+                            <th>Harga per Unit</th>
+                            <th>Jumlah</th>
                             <th>Subtotal</th>
+                            <th>Status</th>
                           </tr>
                         </thead>
                         <tbody>
@@ -193,6 +194,15 @@
                             <td>Rp. {{ number_format($detail->unit_price / $detail->qty) }}</td>
                             <td>{{ $detail->qty }}</td>
                             <td>Rp. {{ number_format($detail->unit_price) }}</td>
+                            @if($detail->is_delivered == 1)
+                              <td>
+                                <button type="button" class="btn btn-success btn-block">Terkirim</button>
+                              </td>
+                            @else
+                              <td>
+                                <button type="button" class="btn btn-danger btn-block">Belum Terkirim</button>
+                              </td>
+                            @endif
                           </tr>
                           @endforeach
                         </tbody>
@@ -202,7 +212,7 @@
                   <div class="row">
                     <div class="col-md-6">
                       <div class="form-group">
-                        <label for="exampleInputPassword1">Total Discount</label>
+                        <label for="exampleInputPassword1">Total Diskon</label>
                         <input type="text" class="form-control" name="price" value="Rp. {{ number_format($page->total_discount) }}" placeholder="" readonly required />
                       </div>
                     </div>
@@ -216,13 +226,13 @@
                   <div class="row">
                     <div class="col-md-6">
                       <div class="form-group">
-                        <label for="exampleInputPassword1">Total Price</label>
+                        <label for="exampleInputPassword1">Total Harga</label>
                         <input type="text" class="form-control" name="price" value="Rp. {{ number_format($page->total_price) }}" placeholder="" readonly required />
                       </div>
                     </div>
                     <div class="col-md-6">
                       <div class="form-group">
-                        <label for="exampleInputEmail1">Total Amount Paid</label>
+                        <label for="exampleInputEmail1">Total Pembayaran</label>
                         <input type="text" class="form-control" name="stock" value="Rp. {{ number_format($page->total_amount_paid) }}" placeholder="" readonly required />
                       </div>
                     </div>
@@ -230,13 +240,13 @@
                   <div class="row">
                     <div class="col-md-6">
                       <div class="form-group">
-                        <label for="exampleInputPassword1">Payment Status</label>
+                        <label for="exampleInputPassword1">Status Pembayaran</label>
                         <input type="text" class="form-control" name="price" value="{{ $page->status_name }}" placeholder="" readonly required />
                       </div>
                     </div>
                     <div class="col-md-6">
                       <div class="form-group">
-                        <label for="exampleInputEmail1">Deliver Status</label>
+                        <label for="exampleInputEmail1">Status Pesanan</label>
                         <input type="text" class="form-control" name="stock" value="{{ $page->deliver_name }}" placeholder="" readonly required />
                       </div>
                     </div>
@@ -245,7 +255,7 @@
                   <input type="hidden" name="id" value="{{ $page->id }}" />
                 </div>
                 <div class="modal-footer">
-                  <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                  <button type="button" class="btn btn-secondary" data-dismiss="modal">Tutup</button>
                   <!-- <a href="order-list/cetak-suratJalan-pdf/{{ $page->id }}" class="btn btn-primary">Cetak Surat Jalan</a> -->
                   <!-- <button type="submit" class="btn btn-primary">Save</button> -->
                 </div>
@@ -266,7 +276,7 @@
             <div class="modal-dialog modal-primary" role="document">
               <div class="modal-content">
                 <div class="modal-header">
-                  <h4 class="modal-title">Confirm Delivered Order</h4>
+                  <h4 class="modal-title">Konfirmasi Pesanan terkirim</h4>
                   <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">×</span>
                   </button>
@@ -275,13 +285,13 @@
                   <div class="row">
                     <div class="col-md-6">
                       <div class="form-group">
-                        <label for="exampleInputPassword1">Order Number</label>
+                        <label for="exampleInputPassword1">Nomor Pesanan</label>
                         <input type="text" class="form-control" name="price" value="{{ $page->transaction_number }}" placeholder="" readonly required />
                       </div>
                     </div>
                     <div class="col-md-6">
                       <div class="form-group">
-                        <label for="exampleInputEmail1">Order Date</label>
+                        <label for="exampleInputEmail1">Tanggal Pesanan</label>
                         <input type="text" class="form-control" name="stock" value="{{ $page->created_at }}" placeholder="" readonly required />
                       </div>
                     </div>
@@ -291,19 +301,29 @@
                       <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
                         <thead>
                           <tr>
-                            <th>Product Name</th>
-                            <th>Unit Price</th>
-                            <th>Qty</th>
+                            <th>Nama Produk</th>
+                            <th>Harga per Unit</th>
+                            <th>Jumlah</th>
                             <th>Subtotal</th>
+                            <th>Status</th>
                           </tr>
                         </thead>
                         <tbody>
                           @foreach($page['transaction_detail'] as $detail)
                           <tr>
                             <td>{{ $detail->product->product_name }}</td>
-                            <td>Rp. {{ number_format($detail->unit_price / $detail->qty) }}</td>
+                            <td>{{ number_format($detail->unit_price / $detail->qty) }}</td>
                             <td>{{ $detail->qty }}</td>
-                            <td>Rp. {{ number_format($detail->unit_price) }}</td>
+                            <td>{{ number_format($detail->unit_price) }}</td>
+                            @if($detail->is_delivered == 1)
+                              <td>
+                                <button type="button" class="btn btn-success btn-block">Terkirim</button>
+                              </td>
+                            @else
+                              <td>
+                                <button type="button" class="btn btn-danger btn-block">Belum Terkirim</button>
+                              </td>
+                            @endif
                           </tr>
                           @endforeach
                         </tbody>
@@ -313,7 +333,7 @@
                   <div class="row">
                     <div class="col-md-6">
                       <div class="form-group">
-                        <label for="exampleInputPassword1">Total Discount</label>
+                        <label for="exampleInputPassword1">Total Diskon</label>
                         <input type="text" class="form-control" name="price" value="Rp. {{ number_format($page->total_discount) }}" placeholder="" readonly required />
                       </div>
                     </div>
@@ -327,13 +347,13 @@
                   <div class="row">
                     <div class="col-md-6">
                       <div class="form-group">
-                        <label for="exampleInputPassword1">Total Price</label>
+                        <label for="exampleInputPassword1">Total Harga</label>
                         <input type="text" class="form-control" name="price" value="Rp. {{ number_format($page->total_price) }}" placeholder="" readonly required />
                       </div>
                     </div>
                     <div class="col-md-6">
                       <div class="form-group">
-                        <label for="exampleInputEmail1">Total Amount Paid</label>
+                        <label for="exampleInputEmail1">Total Pembayaran</label>
                         <input type="text" class="form-control" name="stock" value="Rp. {{ number_format($page->total_amount_paid) }}" placeholder="" readonly required />
                       </div>
                     </div>
@@ -341,13 +361,13 @@
                   <div class="row">
                     <div class="col-md-6">
                       <div class="form-group">
-                        <label for="exampleInputPassword1">Payment Status</label>
+                        <label for="exampleInputPassword1">Status Pembayaran</label>
                         <input type="text" class="form-control" name="price" value="{{ $page->status_name }}" placeholder="" readonly required />
                       </div>
                     </div>
                     <div class="col-md-6">
                       <div class="form-group">
-                        <label for="exampleInputEmail1">Deliver Status</label>
+                        <label for="exampleInputEmail1">Status Pesanan</label>
                         <input type="text" class="form-control" name="stock" value="{{ $page->deliver_name }}" placeholder="" readonly required />
                       </div>
                     </div>
@@ -356,8 +376,8 @@
                   <input type="hidden" name="id" value="{{ $page->id }}" />
                 </div>
                 <div class="modal-footer">
-                  <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
-                  <button type="submit"  class="btn btn-primary">Delivered</button>
+                  <button type="button" class="btn btn-secondary" data-dismiss="modal">Tutup</button>
+                  <button type="submit"  class="btn btn-primary">Pesanan Dikirim</button>
                   <!-- <a href="order-list/cetak-suratJalan-pdf/{{ $page->id }}" class="btn btn-primary">Cetak Surat Jalan</a> -->
                 </div>
               </div>
@@ -369,7 +389,7 @@
         </div>
         @endforeach
 
-        @foreach($data as $page)
+        <!-- @foreach($data as $page)
         <div class="modal fade fakturPrint" id="fakturModal{{ $page->id }}" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
           <div class="container">
             <div class="card">
@@ -410,6 +430,7 @@
                         <th>Unit Price</th>
                         <th>Qty</th>
                         <th>Subtotal</th>
+                        <th>Status</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -419,6 +440,15 @@
                         <td>Rp. {{ number_format($detail->unit_price / $detail->qty) }}</td>
                         <td>{{ $detail->qty }}</td>
                         <td>Rp. {{ number_format($detail->unit_price) }}</td>
+                        @if($detail->is_delivered == 1)
+                          <td>
+                            <button type="button" class="btn btn-success btn-block">Terkirim</button>
+                          </td>
+                        @else
+                          <td>
+                            <button type="button" class="btn btn-danger btn-block">Belum Terkirim</button>
+                          </td>
+                        @endif
                       </tr>
                       @endforeach
                     </tbody>
@@ -463,7 +493,7 @@
             </div>
           </div>
         </div>
-        @endforeach
+        @endforeach -->
 
         <!-- Modal !-->
         @foreach($data as $page)

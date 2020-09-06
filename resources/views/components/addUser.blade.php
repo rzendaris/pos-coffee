@@ -81,8 +81,10 @@
                                 <div class="form-group">
                                     <label for="exampleInputEmail1">Role</label>
                                     <select class="form-control"  name="role" required>
-                                      <option value="2"> Cashier </option>
-                                      <option value="1"> Admin </option>
+                                      <option value=""> -- </option>
+                                      <option value="3"> Cashier </option>
+                                      <option value="4"> Cheff </option>
+                                      <option value="5"> Barista </option>
                                     </select>
                                 </div>
                             </div>
@@ -90,9 +92,10 @@
                                 <div class="form-group">
                                     <label for="exampleInputPassword1">Branch</label>
                                     <select class="form-control"  name="branch_id">
-                                      <option> -- </option>
                                       @foreach($data['branch'] as $branch)
-                                        <option value="{{ $branch->id }}"> {{ $branch->branch_name }} </option>
+                                        @if(Auth::user()->branch_id == $branch->id)
+                                          <option value="{{ $branch->id }}"> {{ $branch->branch_name }} </option>
+                                        @endif
                                       @endforeach
                                     </select>
                                 </div>

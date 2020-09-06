@@ -190,8 +190,9 @@
                                     <label for="exampleInputEmail1">Role</label>
                                     <select class="form-control"  name="role" required>
                                       <option value="{{ $page->role }}"> {{ $page->role_name }} </option>
-                                      <option value="2"> Cashier </option>
-                                      <option value="1"> Admin </option>
+                                      <option value="3"> Cashier </option>
+                                      <option value="4"> Cheff </option>
+                                      <option value="5"> Barista </option>
                                     </select>
                                 </div>
                             </div>
@@ -200,9 +201,6 @@
                                     <label for="exampleInputPassword1">Branch</label>
                                     <select class="form-control" name="branch_id">
                                       <option value="{{ $page->branch_id }}"> {{ $page->branch_name }} </option>
-                                      @foreach($data['branch'] as $branch)
-                                        <option value="{{ $branch->id }}"> {{ $branch->branch_name }} </option>
-                                      @endforeach
                                     </select>
                                 </div>
                             </div>

@@ -23,6 +23,7 @@ class TransactionDetail extends Model
         'unit_price',
         'ppn',
         'total_price',
+        'is_delivered',
         'status',
         'created_at',
         'created_by',

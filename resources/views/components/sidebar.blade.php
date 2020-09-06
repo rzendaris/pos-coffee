@@ -17,13 +17,13 @@
         <li class="nav-item">
           <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseTwo" aria-expanded="true" aria-controls="collapseTwo">
             <i class="fas fa-fw fa-table"></i>
-              <span>Order</span>
+              <span>Pesanan</span>
           </a>
           <div id="collapseTwo" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionSidebar" style="">
             <div class="bg-white py-2 collapse-inner rounded">
-              <h6 class="collapse-header">Order:</h6>
-              <a href="{{ url('order-undelivered') }}" class="collapse-item">Order Undelivered</a>
-              <a href="{{ url('order-delivered') }}" class="collapse-item">Order Delivered</a>
+              <h6 class="collapse-header">Pesanan:</h6>
+              <a href="{{ url('order-undelivered') }}" class="collapse-item">Pesanan Menunggu</a>
+              <a href="{{ url('order-delivered') }}" class="collapse-item">Pesanan Terkirim</a>
             </div>
           </div>
         </li>
@@ -55,24 +55,6 @@
               <i class="fas fa-fw fa-table"></i>
               <span>Items Management</span></a>
           </li>
-          <!-- <li class="nav-item">
-            <a class="nav-link" href="{{url('/customer-management')}}">
-              <i class="fas fa-fw fa-table"></i>
-              <span>Customer Management</span></a>
-          </li> -->
-          <!-- <li class="nav-item">
-            <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseTwo" aria-expanded="true" aria-controls="collapseTwo">
-              <i class="fas fa-fw fa-table"></i>
-                <span>Transaction</span>
-            </a>
-            <div id="collapseTwo" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionSidebar" style="">
-              <div class="bg-white py-2 collapse-inner rounded">
-                <h6 class="collapse-header">Transaction:</h6>
-                <a href="{{ url('order-list') }}" class="collapse-item">Transaction List</a>
-                <a href="{{ url('order-retur') }}" class="collapse-item">Transaction Retur</a>
-              </div>
-            </div>
-          </li> -->
           <li class="nav-item">
             <a class="nav-link" href="{{url('order-list')}}">
               <i class="fas fa-fw fa-chart-area"></i>
@@ -83,16 +65,20 @@
               <i class="fas fa-fw fa-chart-area"></i>
               <span>Report Management</span></a>
           </li>
-        @endif
-        <!-- <div class="sidebar-heading">
-          Cash
         </div>
-        <li class="nav-item">
-          <a class="nav-link" href="{{url('payment')}}">
-            <i class="fas fa-fw fa-chart-area"></i>
-            <span>Penerimaan Cash</span></a>
-        </li> -->
-      </div>
+        @elseif(env('DEPLOYMENT_ENV') == 'BARISTA')
+          <li class="nav-item active">
+            <a class="nav-link" href="{{url('barista-order-undelivered')}}">
+              <i class="fas fa-fw fa-table"></i>
+              <span>Pesanan</span></a>
+          </li>
+        @elseif(env('DEPLOYMENT_ENV') == 'CHEFF')
+          <li class="nav-item active">
+            <a class="nav-link" href="{{url('chef-order-undelivered')}}">
+              <i class="fas fa-fw fa-table"></i>
+              <span>Pesanan</span></a>
+          </li>
+        @endif
       <hr class="sidebar-divider d-none d-md-block">
       <div class="text-center d-none d-md-inline">
         <button class="rounded-circle border-0" id="sidebarToggle"></button>

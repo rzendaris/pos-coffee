@@ -16,6 +16,7 @@
   <link href="css/sb-admin-2.min.css" rel="stylesheet">
   <link href="css/custom.css" rel="stylesheet">
   <link href="css/select2.min.css" rel="stylesheet">
+  <link href="css/seatmap.css" rel="stylesheet">
 </head>
 
 <body id="page-top">
@@ -126,14 +127,14 @@
                   <!-- Card Body -->
                   <div class="card-body">
                     <div class="form-group">
-                       <label for="exampleInputEmail1">No. Order</label>
+                       <label for="exampleInputEmail1">No. Pesanan</label>
                        <input type="email" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="#: INV-78225">
                     </div>
                     <hr>
 
                     <div class='d-flex justify-content-between'>
                       <label style="width:50%" for='exampleInputEmail1'>Nama Produk</label>
-                      <label style="width:20%" for='exampleInputEmail1'>Qty</label>
+                      <label style="width:20%" for='exampleInputEmail1'>Jumlah</label>
                       <label style="width:30%" for='exampleInputEmail1'>Harga</label>
                     </div>
                     <div class="list_invoice">
@@ -166,17 +167,17 @@
                     </div>
                     <hr>
                     <div class="d-flex justify-content-between">
-                      <a href="#" data-toggle="modal" data-target="#exampleModal" class="btn btn-primary btn-icon-split">
+                      <a href="#" data-toggle="modal" data-target="#payNow" class="btn btn-primary btn-icon-split">
                         <span class="icon text-white-50">
                           <i class="fas fa-flag"></i>
                         </span>
-                        <span class="text">Pay Now</span>
+                        <span class="text">Bayar Sekarang</span>
                       </a>
-                      <a href="#" class="btn btn-danger btn-icon-split">
+                      <a href="#" data-toggle="modal" data-target="#payLater" class="btn btn-danger btn-icon-split">
                         <span class="icon text-white-50">
                           <i class="fas fa-flag"></i>
                         </span>
-                        <span class="text">Pay Later</span>
+                        <span class="text">Bayar Nanti</span>
                       </a>
                     </div>
                   </div>
@@ -185,7 +186,175 @@
 
             </div>
 
-            <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal fade" id="payNow" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+              <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                  <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Review Transaksi</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                      <span aria-hidden="true">&times;</span>
+                    </button>
+                  </div>
+                  <form method="post" action="{{url('add-transaction')}}" enctype="multipart/form-data" class="mt-2">
+                    {{csrf_field()}}
+                    <div class="modal-body">
+                      <div class='d-flex justify-content-between'>
+                        <label style="width:50%" for='exampleInputEmail1'>Nama Produk</label>
+                        <label style="width:20%" for='exampleInputEmail1'>Jumlah</label>
+                        <label style="width:30%" for='exampleInputEmail1'>Harga</label>
+                      </div>
+                      <div class="list_invoice">
+                      
+                      </div>
+                      <hr>
+                      <div class='d-flex justify-content-between'>
+                        <label style="width:70%" for='exampleInputEmail1'><b>Total Harga</b></label>
+                        <label style="width:30%" for='exampleInputEmail1'><b><p id="total_price_pop"></p></b></label>
+                      </div>
+                      <div class="row">
+                        <div class="col-md-6">
+                          <div class="form-group data_cus_form">
+                            <label for="message-text" class="col-form-label">Uang yang Dibayar:</label>
+                            <input class="form-control" id="total_amount_paid" name="total_amount_paid" onkeyup="this.value=addCommas(this.value);" required/>
+                            <input class="form-control" type="hidden" id="total_price_calculate" name="total_price_calculate"/>
+                          </div>
+                        </div>
+                        <div class="col-md-6">
+                          <div class="form-group data_cus_form">
+                            <label for="message-text" class="col-form-label">Kembalian :</label>
+                            <input class="form-control" id="credit" name="credit" readonly required/>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="row">
+                        <div class="col-md-6">
+                          <div class="form-group data_cus_form">
+                            <label for="message-text" class="col-form-label">Pilih Meja</label>
+                            <!-- <input class="form-control" id="seat_table" name="seat_table"/> -->
+                            <select class="form-control" name="seat_table">
+                              <option value="">--</option>
+                              @foreach($data['seat_table'] as $table)
+                                @if($table->status == 1)
+                                  <option value="{{ $table->seat_no }}">{{ $table->seat_no }}</option>
+                                @endif
+                              @endforeach
+                            </select>
+                          </div>
+                        </div>
+                      </div>
+                      <div id="wings"></div>
+                        <div id="seatmap">
+                            <div id="plane">
+                                <div id="cabin">        
+                                    <table>
+                                    <tr>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                    </tr>
+                                    <tr>
+                                      @foreach($data['seat_table'] as $seat)
+                                        @if($seat->location == 'OUTDOOR')
+                                          @if($seat->status == 1)
+                                            <td title="1J" class="seatAvailable">{{ $seat->seat_no }}</td>
+                                          @else
+                                            <td title="1J" class="seatUnavailable">{{ $seat->seat_no }}</td>
+                                          @endif
+                                        @endif
+                                      @endforeach
+                                    </tr>
+                                    <tr>
+                                        <td class="noSeatGalley"></td>
+                                        <td class="noSeatGalley"></td>
+                                        <td class="noSeatGalley"></td>
+                                        <td class="noSeatGalley"></td>
+                                        <td class="noSeatGalley"></td>
+                                        <td class="noSeatGalley"></td>
+                                        <td class="noSeatGalley"></td>
+                                        <td class="noSeatGalley"></td>
+                                        <td class="noSeatGalley"></td>
+                                        <td class="noSeatGalley"></td>
+                                        <td class="noSeatGalley"></td>
+                                    </tr>
+                                    <tr>
+                                        <td class="noSeatGalley">-</td>
+                                        <td class="noSeatGalley">-</td>
+                                        <td class="noSeatGalley">-</td>
+                                        <td class="noSeatGalley">-</td>
+                                        <td class="noSeatGalley">-</td>
+                                        <td class="noSeatGalley">-</td>
+                                        <td class="noSeatGalley">-</td>
+                                        <td class="noSeatGalley">-</td>
+                                        <td class="noSeatGalley">-</td>
+                                        <td class="noSeatGalley">-</td>
+                                        <td class="noSeatGalley">-</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="noSeatGalley"></td>
+                                        <td class="noSeatGalley"></td>
+                                        <td class="noSeatGalley"></td>
+                                        <td class="noSeatGalley"></td>
+                                        <td class="noSeatGalley"></td>
+                                        <td class="noSeatGalley"></td>
+                                        <td class="noSeatGalley"></td>
+                                        <td class="noSeatGalley"></td>
+                                        <td class="noSeatGalley"></td>
+                                        <td class="noSeatGalley"></td>
+                                        <td class="noSeatGalley"></td>
+                                    </tr>
+                                    <tr>
+                                      @foreach($data['seat_table'] as $seat)
+                                        @if($seat->location == 'INDOOR')
+                                          @if($seat->status == 1)
+                                            <td title="1J" class="seatAvailable">{{ $seat->seat_no }}</td>
+                                          @else
+                                            <td title="1J" class="seatUnavailable">{{ $seat->seat_no }}</td>
+                                          @endif
+                                        @endif
+                                      @endforeach
+                                    </tr>
+                                    <tr>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                    </tr>
+                                    </table>            
+                                </div>
+                                <div style="clear: both;"></div>
+                            </div>
+                        </div>
+                        <div id="wings"></div>
+
+                      <input type="hidden" id="product_id" name="product_id[]" />
+                      <input type="hidden" id="product_qty" name="product_qty[]" />
+                      <input type="hidden" id="product_qty" name="paid_status" value="1" />
+                    </div>
+                    <div class="modal-footer">
+                      <button type="button" class="btn btn-secondary" data-dismiss="modal">Tutup</button>
+                      <button type="submit" id="buttonSubmit" class="btn btn-primary" disabled>Simpan</button>
+                    </div>
+                  </form>
+                </div>
+              </div>
+            </div>
+
+            <div class="modal fade" id="payLater" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
               <div class="modal-dialog" role="document">
                 <div class="modal-content">
                   <div class="modal-header">
@@ -198,19 +367,19 @@
                     {{csrf_field()}}
                     <div class="modal-body">
                       <div class='d-flex justify-content-between'>
-                        <label style="width:50%" for='exampleInputEmail1'>Product Name</label>
-                        <label style="width:20%" for='exampleInputEmail1'>Qty</label>
-                        <label style="width:30%" for='exampleInputEmail1'>Price</label>
+                        <label style="width:50%" for='exampleInputEmail1'>Nama Produk</label>
+                        <label style="width:20%" for='exampleInputEmail1'>Jumlah</label>
+                        <label style="width:30%" for='exampleInputEmail1'>Harga</label>
                       </div>
                       <div class="list_invoice">
                       
                       </div>
                       <hr>
                       <div class='d-flex justify-content-between'>
-                        <label style="width:70%" for='exampleInputEmail1'><b>Total Price</b></label>
-                        <label style="width:30%" for='exampleInputEmail1'><b><p id="total_price_pop"></p></b></label>
+                        <label style="width:70%" for='exampleInputEmail1'><b>Total Harga</b></label>
+                        <label style="width:30%" for='exampleInputEmail1'><b><p id="total_price_later"></p></b></label>
                       </div>
-                      <div class="row">
+                      <!-- <div class="row">
                         <div class="col-md-6">
                           <div class="form-group data_cus_form">
                             <label for="message-text" class="col-form-label">Amount Paid:</label>
@@ -224,14 +393,15 @@
                             <input class="form-control" id="credit" name="credit" readonly required/>
                           </div>
                         </div>
-                      </div>
+                      </div> -->
 
-                      <input type="hidden" id="product_id" name="product_id[]" />
-                      <input type="hidden" id="product_qty" name="product_qty[]" />
+                      <input type="hidden" id="product_id_later" name="product_id[]" />
+                      <input type="hidden" id="product_qty_later" name="product_qty[]" />
+                      <input type="hidden" id="product_qty" name="paid_status" value="2" />
                     </div>
                     <div class="modal-footer">
-                      <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                      <button type="submit" id="buttonSubmit" class="btn btn-primary" disabled>Submit</button>
+                      <button type="button" class="btn btn-secondary" data-dismiss="modal">Tutup</button>
+                      <button type="submit" id="buttonSubmit" class="btn btn-primary">Simpan</button>
                     </div>
                   </form>
                 </div>
@@ -410,11 +580,14 @@
 
         $('#product_id').val( product_id_temp );
         $('#product_qty').val( qty_temp );
+        $('#product_id_later').val( product_id_temp );
+        $('#product_qty_later').val( qty_temp );
 
         $('#price_product').html("Rp. " + total.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ","));
         $('#ppn_10').html((0).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ","));
         $('#total_price').html("Rp. " + (total).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ","));
         $('#total_price_pop').html("Rp. " + (total).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ","));
+        $('#total_price_later').html("Rp. " + (total).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ","));
         $('#total_price_calculate').val(total);
 
           // var tot = 0;

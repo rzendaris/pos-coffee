@@ -1,0 +1,58 @@
+#seatmap { 
+    position: relative; 
+}
+#seatmap table {
+    border-collapse: separate;
+    border-spacing: 3px;
+}
+
+#wings {
+    border: solid 5px #333;
+    width: 80px;
+    position: relative;
+    left: 155px;
+}
+
+#plane {
+	height: auto;
+	background: #fff;
+    border: solid 1px #aaa;
+	border-radius: 80px 0 0 80px;
+    z-index: 1;
+}
+    #plane .rows {
+        width: 30px;
+        float: left;  
+        empty-cells: show;
+        margin-top: 12px;
+        margin-left: 30px;
+    }
+        #plane .rows td { 
+            height: 16px; 
+            text-align: right;
+        }
+
+#cabin { 
+    background-color: #dedede; 
+    border: none;
+    border-left: double 3px #aaa;
+    height: auto; 
+    padding: 2px 5px;
+    float: left;
+    margin-left: 0px;
+}
+
+#cabin td { width: 38px; height: 25px; border: solid 1px #666; text-align: center; cursor: pointer; }
+    #cabin td.row              { background-color: transparent; border: none; font-weight: bold; padding-right: 7px; }
+    #cabin td.seatAvailable    { background-color: #01B213; color: #fff; }
+    #cabin td.seatUnavailable  { background-color: #ef0000 !important; color: #ddd !important; }
+    #cabin td.ExtraPay         { background-color: navy; color: #fff !important; }
+    #cabin td.LargeSeat        { width: 23px; }
+    #cabin td.noSeatGalley     { background-color: transparent; border: none; width: 10px; height: 10px;  }
+    #cabin td.noSeatStorage    { background-color: #aaa; }
+    #cabin td.noSeatLavatory   { background-color: #aaa; }
+
+#cabin tr:first-child td,
+#cabin tr:last-child td { height: 2px; border: none; border-radius: 0; }
+#cabin tr:first-child td.wingSeat { border-top: solid 2px #333; }
+#cabin tr:last-child td.wingSeat { border-bottom: solid 2px #333; }

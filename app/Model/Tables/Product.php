@@ -24,6 +24,7 @@ class Product extends Model
         'category_id',
         'image',
         'handle_by',
+        'branch_id',
         'status',
         'created_at',
         'created_by',
