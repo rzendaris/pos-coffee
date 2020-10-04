@@ -82,14 +82,14 @@
             <div class="card-body">
               <ul class="nav nav-tabs" id="myTab" role="tablist">
                 <li class="nav-item">
-                  <a class="nav-link active" id="home-tab" data-toggle="tab" href="#home" role="tab" aria-controls="home" aria-selected="true">Laporan Pembayaran Customer</a>
+                  <a class="nav-link active" id="home-tab" data-toggle="tab" href="#home" role="tab" aria-controls="home" aria-selected="true">Laporan Penjualan</a>
                 </li>
                 <li class="nav-item">
-                  <a class="nav-link" id="profile-tab" data-toggle="tab" href="#profile" role="tab" aria-controls="profile" aria-selected="false">Laporan Piutang</a>
+                  <a class="nav-link" id="profile-tab" data-toggle="tab" href="#profile" role="tab" aria-controls="profile" aria-selected="false">Laporan Pengeluaran</a>
                 </li>
-                <li class="nav-item">
+                <!-- <li class="nav-item">
                   <a class="nav-link" id="contact-tab" data-toggle="tab" href="#contact" role="tab" aria-controls="contact" aria-selected="false">Laporan Penjualan</a>
-                </li>
+                </li> -->
               </ul>
 
               <div class="tab-content" id="myTabContent">
@@ -110,26 +110,34 @@
                           <th>Date</th>
                           <th>No. Order</th>
                           <th>Branches</th>
-                          <th>Payment Method</th>
-                          <th>Bank Account</th>
-                          <th>Amount Paid</th>
+                          <th>Total Amount</th>
                           <th>Cashier</th>
                         </tr>
                       </thead>
                       <tbody>
-                        @foreach($data['payment'] as $page)
+                        @foreach($data['sales'] as $page)
                         <tr>
                           <td>{{ $page->created_at }}</td>
-                          <td><a href="nota-penjualan/cetak-pdf/{{ $page->transaction_number }}" class="btn btn-primary" target="_blank">{{ $page->transaction_number }}</a></td>
-                          <td>{{ $page->transaction->branch->branch_name }}</td>
-                          <td>{{ $page->payment_method }}</td>
-                          <td>{{ $page->bank_account }}</td>
-                          <td>Rp. {{ number_format($page->amount_paid) }}</td>
+                          <td><button class="btn btn-primary" data-toggle="modal" data-target="#editModal{{ $page->id }}">{{ $page->transaction_number }}</button></td>
+                          <td>{{ $page->branch->branch_name }}</td>
+                          <td>Rp. {{ number_format($page->total_amount_paid) }}</td>
                           <td>{{ $page->created_by }}</td>
                         </tr>
                         @endforeach
                       </tbody>
                     </table>
+                  </div>
+                  <div class="card-body">
+                    <div class="table-responsive">
+                      <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+                        <thead>
+                          <tr>
+                            <th rowspan="4">Total Penjualan ( {{ $data['from']." - ".$data['to'] }} )</th>
+                            <th rowspan="3">Rp. {{ number_format($data['total_transaction']) }}</th>
+                          </tr>
+                        </thead>
+                      </table>
+                    </div>
                   </div>
                 </div>
 
@@ -144,27 +152,23 @@
                       <thead>
                         <tr>
                           <th>Date</th>
-                          <th>No. Order</th>
-                          <th>Branches</th>
-                          <th>Total Price</th>
-                          <th>Amount Paid</th>
-                          <th>Credit</th>
-                          <th>Duration</th>
-                          <th>Time Of Payment</th>
-                          <th>Cashier</th>
+                          <th>Branch</th>
+                          <th>Jenis Pengeluaran</th>
+                          <th>Jumlah</th>
+                          <th>Satuan</th>
+                          <th>Total</th>
+                          <th>Dibuat Oleh</th>
                         </tr>
                       </thead>
                       <tbody>
-                        @foreach($data['piutang'] as $page)
+                        @foreach($data['expense'] as $page)
                         <tr>
                           <td>{{ $page->created_at }}</td>
-                          <td>{{ $page->transaction_number }}</td>
                           <td>{{ $page->branch->branch_name }}</td>
-                          <td>{{ number_format($page->total_price) }}</td>
-                          <td>{{ number_format($page->total_amount_paid) }}</td>
-                          <td>{{ number_format($page->total_price - $page->total_amount_paid) }}</td>
-                          <td>{{ $page->created_at->diffInDays($data['now_date'], false) }} day(s)</td>
-                          <td>{{ $page->time_of_payment }}</td>
+                          <td>{{ $page->name }}</td>
+                          <td>{{ $page->qty }}</td>
+                          <td>{{ $page->measure }}</td>
+                          <td>{{ number_format($page->price) }}</td>
                           <td>{{ $page->created_by }}</td>
                           @endforeach
                       </tbody>
@@ -174,6 +178,18 @@
                         </tr>
                       </tfoot>
                     </table>
+                  </div>
+                  <div class="card-body">
+                    <div class="table-responsive">
+                      <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+                        <thead>
+                          <tr>
+                            <th rowspan="4">Total Pengeluaran ( {{ $data['from']." - ".$data['to'] }} )</th>
+                            <th rowspan="3">Rp. {{ number_format($data['total_expense']) }}</th>
+                          </tr>
+                        </thead>
+                      </table>
+                    </div>
                   </div>
                 </div>
 
@@ -219,6 +235,114 @@
 
         </div>
         <!-- /.container-fluid -->
+        
+
+        <!-- Modal !-->
+        @foreach($data['sales'] as $page)
+        <div class="modal fade" id="editModal{{ $page->id }}" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+          <form method="post" action="{{url('update-order')}}" enctype="multipart/form-data">
+            {{csrf_field()}}
+            <div class="modal-dialog modal-primary" role="document">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h4 class="modal-title">Detail Order</h4>
+                  <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">×</span>
+                  </button>
+                </div>
+                <div class="modal-body">
+                  <div class="row">
+                    <div class="col-md-6">
+                      <div class="form-group">
+                        <label for="exampleInputPassword1">Order Number</label>
+                        <input type="text" class="form-control" name="price" value="{{ $page->transaction_number }}" placeholder="" readonly required />
+                      </div>
+                    </div>
+                    <div class="col-md-6">
+                      <div class="form-group">
+                        <label for="exampleInputEmail1">Order Date</label>
+                        <input type="text" class="form-control" name="stock" value="{{ $page->created_at }}" placeholder="" readonly required />
+                      </div>
+                    </div>
+                  </div>
+                  <div class="row">
+                    <div class="col-md-12">
+                      <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+                        <thead>
+                          <tr>
+                            <th>Product Name</th>
+                            <th>Unit Price</th>
+                            <th>Qty</th>
+                            <th>Subtotal</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          @foreach($page['transaction_detail'] as $detail)
+                          <tr>
+                            <td>{{ $detail->product->product_name }}</td>
+                            <td>Rp. {{ number_format($detail->unit_price / $detail->qty) }}</td>
+                            <td>{{ $detail->qty }}</td>
+                            <td>Rp. {{ number_format($detail->unit_price) }}</td>
+                          </tr>
+                          @endforeach
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                  <div class="row">
+                    <div class="col-md-6">
+                      <div class="form-group">
+                        <label for="exampleInputPassword1">Total Discount</label>
+                        <input type="text" class="form-control" name="price" value="Rp. {{ number_format($page->total_discount) }}" placeholder="" readonly required />
+                      </div>
+                    </div>
+                    <div class="col-md-6">
+                      <div class="form-group">
+                        <label for="exampleInputEmail1">PPN</label>
+                        <input type="text" class="form-control" name="stock" value="Rp. {{ number_format($page->total_ppn) }}" placeholder="" readonly required />
+                      </div>
+                    </div>
+                  </div>
+                  <div class="row">
+                    <div class="col-md-6">
+                      <div class="form-group">
+                        <label for="exampleInputPassword1">Total Price</label>
+                        <input type="text" class="form-control" name="price" value="Rp. {{ number_format($page->total_price) }}" placeholder="" readonly required />
+                      </div>
+                    </div>
+                    <div class="col-md-6">
+                      <div class="form-group">
+                        <label for="exampleInputEmail1">Total Amount Paid</label>
+                        <input type="text" class="form-control" name="stock" value="Rp. {{ number_format($page->total_amount_paid) }}" placeholder="" readonly required />
+                      </div>
+                    </div>
+                  </div>
+                  <div class="row">
+                    <div class="col-md-6">
+                      <div class="form-group">
+                        <label for="exampleInputPassword1">Payment Status</label>
+                        <input type="text" class="form-control" name="price" value="{{ $page->status_name }}" placeholder="" readonly required />
+                      </div>
+                    </div>
+                    <div class="col-md-6">
+                      <div class="form-group">
+                        <label for="exampleInputEmail1">Deliver Status</label>
+                        <input type="text" class="form-control" name="stock" value="{{ $page->deliver_name }}" placeholder="" readonly required />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="modal-footer">
+                  <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                </div>
+              </div>
+              <!-- /.modal-content -->
+            </div>
+            <!-- /.modal-dialog -->
+          </form>
+          <!-- /.modal-dialog -->
+        </div>
+        @endforeach
 
         <!-- Footer -->
         <footer class="sticky-footer bg-white">

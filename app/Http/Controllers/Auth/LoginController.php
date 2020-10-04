@@ -30,11 +30,16 @@ class LoginController extends Controller
     // protected $redirectTo = '/';
     protected function authenticated(Request $request, $user)
     {
-        $redirectTo = "/";
         if (env('DEPLOYMENT_ENV') == 'CHEFF'){
             $redirectTo = "/chef-order-undelivered";
         } else if (env('DEPLOYMENT_ENV') == 'BARISTA'){
             $redirectTo = "/barista-order-undelivered";
+        } else {
+            if($user->role == 2){
+                $redirectTo = "/dashboard";
+            } else {
+                $redirectTo = "/";
+            }
         };
 
         return redirect($redirectTo);

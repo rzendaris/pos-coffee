@@ -144,7 +144,7 @@ class UserManagementController extends Controller
                 'name' => $request->get('name'),
                 'email' => $request->get('email'),
                 'role' => $request->get('role'),
-                'branch_id' => $branch_id,
+                'branch_id' => $request->branch_id,
                 'updated_by' => Auth::user()->name
             ]);
 

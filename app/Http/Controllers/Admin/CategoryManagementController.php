@@ -31,7 +31,7 @@ class CategoryManagementController extends Controller
     public function mainCategory()
     {
         try{
-            $data = ProductCategory::get();
+            $data = ProductCategory::where('branch_id', Auth::user()->branch_id)->get();
             $no = 1;
             foreach($data as $page){
                 $page->no = $no;
@@ -57,7 +57,8 @@ class CategoryManagementController extends Controller
             $type = new ProductCategory([
                 'category_name' => $request->get('type_name'),
                 'description' => $request->get('description'),
-                'created_by' => Auth::user()->name
+                'created_by' => Auth::user()->name,
+                'branch_id' => Auth::user()->branch_id
             ]);
             $type->save();
 

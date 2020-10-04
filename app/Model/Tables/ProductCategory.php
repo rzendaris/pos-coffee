@@ -19,6 +19,7 @@ class ProductCategory extends Model
         'id',
         'category_name',
         'description',
+        'branch_id',
         'status',
         'created_at',
         'created_by',

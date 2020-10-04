@@ -69,6 +69,7 @@
                       <th>No</th>
                       <th>Tanggal</th>
                       <th>No. Pesanan</th>
+                      <th>Nama Pelanggan</th>
                       <th>Cabang</th>
                       <th>Status Pembayaran</th>
                       <th>Aksi</th>
@@ -89,6 +90,7 @@
                       <td>{{ $page->no }}</td>
                       <td>{{ $page->created_at }}</td>
                       <td><a href="#" class="btn btn-primary">{{ $page->transaction_number }}</a></td>
+                      <td>{{ $page->customer_name }}</td>
                       <td>{{ $page->branch->branch_name }}</td>
                       <td>{{ $page->status_name }}</td>
                       <td style="width:15%">
@@ -194,6 +196,14 @@
                       </table>
                     </div>
                   </div>
+                  <div class="row">
+                    <div class="col-md-12">
+                      <div class="form-group">
+                        <label for="exampleInputPassword1">Catatan Tambahan</label>
+                        <textarea class="form-control" id="additional_request" name="additional_request" disabled>{{ $page->additional_request }}</textarea>
+                      </div>
+                    </div>
+                  </div>
 
                   <input type="hidden" name="id" value="{{ $page->id }}" />
                 </div>
@@ -269,6 +279,14 @@
                           @endforeach
                         </tbody>
                       </table>
+                    </div>
+                  </div>
+                  <div class="row">
+                    <div class="col-md-12">
+                      <div class="form-group">
+                        <label for="exampleInputPassword1">Catatan Tambahan</label>
+                        <textarea class="form-control" id="additional_request" name="additional_request" disabled>{{ $page->additional_request }}</textarea>
+                      </div>
                     </div>
                   </div>
 

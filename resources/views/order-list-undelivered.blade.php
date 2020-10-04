@@ -69,10 +69,10 @@
                       <th>No</th>
                       <th>Tanggal</th>
                       <th>No. Pesanan</th>
+                      <th>Nama Pelanggan</th>
                       <th>Cabang</th>
                       <th>Total Harga</th>
                       <th>Jumlah Pembayaran</th>
-                      <th>Kembalian</th>
                       <th>Status Pembayaran</th>
                       <th>Aksi</th>
                     </tr>
@@ -87,53 +87,61 @@
                     </tr>
                   </tfoot> -->
                   <tbody>
-                    @foreach($data as $page)
+                    @foreach($data['order'] as $page)
                     <tr>
                       <td>{{ $page->no }}</td>
                       <td>{{ $page->created_at }}</td>
                       <td><a href="#" class="btn btn-primary">{{ $page->transaction_number }}</a></td>
+                      <td>{{ $page->customer_name }}</td>
                       <td>{{ $page->branch->branch_name }}</td>
                       <td>{{ number_format($page->total_price) }}</td>
                       <td>{{ number_format($page->total_amount_paid) }}</td>
-                      <td>{{ number_format($page->total_price - $page->total_amount_paid) }}</td>
                       <td>{{ $page->status_name }}</td>
                       <td style="width:15%">
                         @if($page->is_delivered == 1)
-                        <div class="row">
-                          <div class="col-md-12">
-                            <button type="button" class="btn btn-success btn-block" data-toggle="modal" data-target="#editModal{{ $page->id }}">
-                              <!-- <i class="fas fa-fw fa-info" style="margin-left:-6px"></i> --> Terkirim
-                            </button>
+                          <div class="row">
+                            <div class="col-md-12">
+                              <button type="button" class="btn btn-success btn-block" data-toggle="modal" data-target="#editModal{{ $page->id }}">
+                                <!-- <i class="fas fa-fw fa-info" style="margin-left:-6px"></i> --> Terkirim
+                              </button>
+                            </div>
                           </div>
-                        </div>
                         @else
-                        @if($page->status == 3)
-                        <div class="row">
-                          <div class="col-md-12">
-                            <button type="button" class="btn btn-danger btn-block" data-toggle="modal" data-target="#editModal{{ $page->id }}">
-                              <!-- <i class="fas fa-fw fa-info" style="margin-left:-6px"></i> --> Dibatalkan
-                            </button>
-                          </div>
-                        </div>
-                        @else
-                        <div class="row">
-                          <div class="col-md-4">
-                            <button type="button" class="btn btn-warning btn-block" data-toggle="modal" data-target="#editModal{{ $page->id }}">
-                              <i class="fas fa-fw fa-info" style="margin-left:-6px"></i>
-                            </button>
-                          </div>
-                          <div class="col-md-4">
-                            <button type="button" class="btn btn-danger btn-block" data-toggle="modal" data-target="#cancelledModal{{ $page->id }}">
-                              <i class="fas fa-fw fa-minus-circle" style="margin-left:-6px"></i>
-                            </button>
-                          </div>
-                          <div class="col-md-4">
-                            <button type="button" class="btn btn-success btn-block" data-toggle="modal" data-target="#deliveredModal{{ $page->id }}">
-                              <i class="fas fa-fw fa-truck" style="margin-left:-6px"></i>
-                            </button>
-                          </div>
-                        </div>
-                        @endif
+                          @if($page->status == 3)
+                            <div class="row">
+                              <div class="col-md-12">
+                                <button type="button" class="btn btn-danger btn-block" data-toggle="modal" data-target="#editModal{{ $page->id }}">
+                                  <!-- <i class="fas fa-fw fa-info" style="margin-left:-6px"></i> --> Dibatalkan
+                                </button>
+                              </div>
+                            </div>
+                          @elseif($page->status == 2)
+                            <div class="row">
+                              <div class="col-md-6">
+                                <button type="button" class="btn btn-danger btn-block" data-toggle="modal" data-target="#updateOrderModal{{ $page->id }}">
+                                  <i class="fas fa-fw fa-plus" style="margin-left:-6px"></i>
+                                </button>
+                              </div>
+                              <div class="col-md-6">
+                                <button type="button" class="btn btn-success btn-block" data-toggle="modal" data-target="#checkoutModal{{ $page->id }}">
+                                  <i class="fas fa-fw fa-money-bill" style="margin-left:-6px"></i>
+                                </button>
+                              </div>
+                            </div>
+                          @else
+                            <div class="row">
+                              <div class="col-md-6">
+                                <button type="button" class="btn btn-warning btn-block" data-toggle="modal" data-target="#editModal{{ $page->id }}">
+                                  <i class="fas fa-fw fa-info" style="margin-left:-6px"></i>
+                                </button>
+                              </div>
+                              <div class="col-md-6">
+                                <button type="button" class="btn btn-success btn-block" data-toggle="modal" data-target="#deliveredModal{{ $page->id }}">
+                                  <i class="fas fa-fw fa-truck" style="margin-left:-6px"></i>
+                                </button>
+                              </div>
+                            </div>
+                          @endif
                         @endif
                       </td>
                     </tr>
@@ -148,7 +156,7 @@
         <!-- /.container-fluid -->
 
         <!-- Modal !-->
-        @foreach($data as $page)
+        @foreach($data['order'] as $page)
         <div class="modal fade" id="editModal{{ $page->id }}" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
           <form method="post" action="{{url('update-order')}}" enctype="multipart/form-data">
             {{csrf_field()}}
@@ -207,6 +215,14 @@
                           @endforeach
                         </tbody>
                       </table>
+                    </div>
+                  </div>
+                  <div class="row">
+                    <div class="col-md-12">
+                      <div class="form-group">
+                        <label for="exampleInputPassword1">Catatan Tambahan</label>
+                        <textarea class="form-control" id="additional_request" name="additional_request" disabled>{{ $page->additional_request }}</textarea>
+                      </div>
                     </div>
                   </div>
                   <div class="row">
@@ -269,7 +285,221 @@
         @endforeach
 
         <!-- Modal !-->
-        @foreach($data as $page)
+        @foreach($data['order'] as $page)
+        <div class="modal fade" id="updateOrderModal{{ $page->id }}" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+          <form method="post" action="{{url('add-new-order')}}" enctype="multipart/form-data">
+            {{csrf_field()}}
+            <div class="modal-dialog modal-primary" role="document">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h4 class="modal-title">Informasi Pesanan</h4>
+                  <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">×</span>
+                  </button>
+                </div>
+                <div class="modal-body">
+                  <div class="row">
+                    <div class="col-md-6">
+                      <div class="form-group">
+                        <label for="exampleInputPassword1">Nomor Pesanan</label>
+                        <input type="text" class="form-control" name="price" value="{{ $page->transaction_number }}" placeholder="" readonly required />
+                      </div>
+                    </div>
+                    <div class="col-md-6">
+                      <div class="form-group">
+                        <label for="exampleInputEmail1">Tanggal Pesanan</label>
+                        <input type="text" class="form-control" name="stock" value="{{ $page->created_at }}" placeholder="" readonly required />
+                      </div>
+                    </div>
+                  </div>
+                  <div class="row">
+                    <div class="col-md-12">
+                      <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+                        <thead>
+                          <tr>
+                            <th>Nama Produk</th>
+                            <th>Harga per Unit</th>
+                            <th>Jumlah</th>
+                            <th>Subtotal</th>
+                            <th>Status</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          @foreach($page['transaction_detail'] as $detail)
+                          <tr>
+                            <td>{{ $detail->product->product_name }}</td>
+                            <td>Rp. {{ number_format($detail->unit_price / $detail->qty) }}</td>
+                            <td>{{ $detail->qty }}</td>
+                            <td>Rp. {{ number_format($detail->unit_price) }}</td>
+                            @if($detail->is_delivered == 1)
+                              <td>
+                                <button type="button" class="btn btn-success btn-block">Terkirim</button>
+                              </td>
+                            @else
+                              <td>
+                                <button type="button" class="btn btn-danger btn-block">Belum Terkirim</button>
+                              </td>
+                            @endif
+                          </tr>
+                          @endforeach
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                  <div class="row">
+                    <div class="col-md-12">
+                      <div class="form-group">
+                        <button type="button" class="btn btn-info btn-block" data-toggle="modal" data-target="#addNewOrderModal">
+                          Tambahkan Pesanan Baru
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="row">
+                    <div class="col-md-12">
+                      <div class="form-group">
+                        <label for="exampleInputPassword1">Catatan Tambahan</label>
+                        <textarea class="form-control" id="additional_request" name="additional_request">{{ $page->additional_request }}</textarea>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="row">
+                    <div class="col-md-6">
+                      <div class="form-group">
+                        <label for="exampleInputPassword1">Total Diskon</label>
+                        <input type="text" class="form-control" name="price" value="Rp. {{ number_format($page->total_discount) }}" placeholder="" readonly required />
+                      </div>
+                    </div>
+                    <div class="col-md-6">
+                      <div class="form-group">
+                        <label for="exampleInputEmail1">PPN</label>
+                        <input type="text" class="form-control" name="stock" value="Rp. {{ number_format($page->total_ppn) }}" placeholder="" readonly required />
+                      </div>
+                    </div>
+                  </div>
+                  <div class="row">
+                    <div class="col-md-6">
+                      <div class="form-group">
+                        <label for="exampleInputPassword1">Total Harga</label>
+                        <input type="text" class="form-control" name="price" value="Rp. {{ number_format($page->total_price) }}" placeholder="" readonly required />
+                      </div>
+                    </div>
+                    <div class="col-md-6">
+                      <div class="form-group">
+                        <label for="exampleInputEmail1">Total Pembayaran</label>
+                        <input type="text" class="form-control" name="stock" value="Rp. {{ number_format($page->total_amount_paid) }}" placeholder="" readonly required />
+                      </div>
+                    </div>
+                  </div>
+                  <div class="row">
+                    <div class="col-md-6">
+                      <div class="form-group">
+                        <label for="exampleInputPassword1">Status Pembayaran</label>
+                        <input type="text" class="form-control" name="price" value="{{ $page->status_name }}" placeholder="" readonly required />
+                      </div>
+                    </div>
+                    <div class="col-md-6">
+                      <div class="form-group">
+                        <label for="exampleInputEmail1">Status Pesanan</label>
+                        <input type="text" class="form-control" name="stock" value="{{ $page->deliver_name }}" placeholder="" readonly required />
+                      </div>
+                    </div>
+                  </div>
+
+                  <input type="hidden" name="id" value="{{ $page->id }}" />
+                </div>
+                <div class="modal-footer">
+                  <button type="button" class="btn btn-secondary" data-dismiss="modal">Tutup</button>
+                  <!-- <a href="order-list/cetak-suratJalan-pdf/{{ $page->id }}" class="btn btn-primary">Cetak Surat Jalan</a> -->
+                  <button type="submit" class="btn btn-primary">Save</button>
+                </div>
+              </div>
+              <!-- /.modal-content -->
+            </div>
+            <!-- /.modal-dialog -->
+          </form>
+          <!-- /.modal-dialog -->
+        </div>
+        @endforeach
+        
+        <div class="modal fade" id="addNewOrderModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+          <div class="modal-dialog modal-primary" role="document">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h4 class="modal-title">Daftar Produk</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                  <span aria-hidden="true">×</span>
+                </button>
+              </div>
+              <div class="modal-body">
+                <div class="row">
+                  <div class="card shadow mb-4 col-md-12">
+                    <div class="card-body">
+                      <ul class="nav nav-tabs" id="myTab" role="tablist">
+
+                        @foreach($data['product_category'] as $key => $product_category)
+                          <li class="nav-item">
+
+                          @if($key == 0)
+                            <a class="nav-link" id="home-tab-{{ $product_category->id }}" data-toggle="tab" href="#home-{{ $product_category->id }}" role="tab" aria-controls="home-{{ $product_category->id }}" aria-selected="true">{{ $product_category->category_name }}</a>
+                          @else
+                            <a class="nav-link" id="home-tab-{{ $product_category->id }}" data-toggle="tab" href="#home-{{ $product_category->id }}" role="tab" aria-controls="home-{{ $product_category->id }}" aria-selected="false">{{ $product_category->category_name }}</a>
+                          @endif
+                          </li>
+                        @endforeach
+                      </ul>
+
+                      <div class="tab-content" id="myTabContent">
+                        @foreach($data['product_category'] as $key => $product_category)
+                          @if($key == 0)
+                            <div class="tab-pane fade show active" id="home-{{ $product_category->id }}" role="tabpanel" aria-labelledby="home-tab-{{ $product_category->id }}">
+                          @else
+                            <div class="tab-pane fade" id="home-{{ $product_category->id }}" role="tabpanel" aria-labelledby="home-tab-{{ $product_category->id }}">
+                          @endif
+                            <div class="row">
+                              <!-- Earnings (Monthly) Card Example -->
+                              @foreach($product_category->product as $product)
+                                <div class="col-xl-3 col-md-6 mb-4">
+                                  <div class="card border-left-primary shadow h-100 py-2">
+                                    <div class="card-body">
+                                      <div class="row no-gutters align-items-center">
+                                        <div class="col mr-2">
+                                          <div class="text-xs font-weight-bold text-primary text-uppercase mb-1 name_product_class">{{ $product->product_name }}</div>
+                                          <div class="text-xs font-weight-bold text-gray-500 text-uppercase mb-1">Stock {{ $product->stock }}</div>
+                                          <div class="h5 mb-0 font-weight-bold text-gray-800">Rp.{{ number_format($product->price) }}</div>
+                                        </div>
+                                        <div class="col mr-2">
+                                          <div class="quantity">
+                                            <input type="hidden" id="product_pricing{{ $product->no }}" value="{{ $product->price }}"/>
+                                            <input type="hidden" id="name_product{{ $product->no }}" value="{{ $product->product_name }}"/>
+                                            <input type="hidden" id="product_id_store{{ $product->no }}" value="{{ $product->id }}"/>
+                                          </div>
+                                        </div>
+                                        <div class="col-auto">
+                                          <input type="number" style="width:50%" value="0" min="0" max="99" id="quantity__input{{ $product->no }}" class="quantity__input">
+                                          <i class="fas fa-shopping-cart fa-2x text-gray-300"></i>
+                                        </div>
+                                      </div>
+                                    </div>
+                                  </div>
+                                </div>
+                              @endforeach
+                            </div>
+                          </div>
+                        @endforeach
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <!-- /.modal-content -->
+          </div>
+          <!-- /.modal-dialog -->
+        </div>
+
+        <!-- Modal !-->
+        @foreach($data['order'] as $page)
         <div class="modal fade" id="deliveredModal{{ $page->id }}" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
           <form method="post" action="{{url('delivered-order')}}" enctype="multipart/form-data">
             {{csrf_field()}}
@@ -331,6 +561,14 @@
                     </div>
                   </div>
                   <div class="row">
+                    <div class="col-md-12">
+                      <div class="form-group">
+                        <label for="exampleInputPassword1">Catatan Tambahan</label>
+                        <textarea class="form-control" id="additional_request" name="additional_request" disabled>{{ $page->additional_request }}</textarea>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="row">
                     <div class="col-md-6">
                       <div class="form-group">
                         <label for="exampleInputPassword1">Total Diskon</label>
@@ -389,114 +627,8 @@
         </div>
         @endforeach
 
-        <!-- @foreach($data as $page)
-        <div class="modal fade fakturPrint" id="fakturModal{{ $page->id }}" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-          <div class="container">
-            <div class="card">
-              <div class="card-header">
-                <span id="fontimpact">INVOICE</span>
-                <span class="float-right" id="fontimpact">Centro Links</span>
-              </div>
-              <div class="card-body">
-                <div class="row mb-4">
-                  <div class="col-sm-6">
-                    <div class="d-flex justify-content-between" style="width: 100%">
-                      <p class="mb-3">No</p>
-                      <p style="width: 50%;font-weight: bold">: {{ $page->transaction_number }}</p>
-                    </div>
-                  </div>
-
-                  <div class="col-sm-6">
-                    <div class="d-flex justify-content-between" style="width: 100%">
-                      <p class="mb-3">Date</p>
-                      <p style="width: 50%;font-weight: bold">: {{ $page->created_at }}</p>
-                    </div>
-                    <div class="d-flex justify-content-between" style="width: 100%">
-                      <p class="mb-3">No. PO</p>
-                      <p style="width: 50%;font-weight: bold">: 981279387</p>
-                    </div>
-                    <div class="d-flex justify-content-between" style="width: 100%">
-                      <p class="mb-3">Term</p>
-                      <p style="width: 50%;font-weight: bold">: 40 hari</p>
-                    </div>
-                  </div>
-                </div>
-
-                <div class="table-responsive-sm">
-                  <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
-                    <thead>
-                      <tr>
-                        <th>Product Name</th>
-                        <th>Unit Price</th>
-                        <th>Qty</th>
-                        <th>Subtotal</th>
-                        <th>Status</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      @foreach($page['transaction_detail'] as $detail)
-                      <tr>
-                        <td>{{ $detail->product->product_name }}</td>
-                        <td>Rp. {{ number_format($detail->unit_price / $detail->qty) }}</td>
-                        <td>{{ $detail->qty }}</td>
-                        <td>Rp. {{ number_format($detail->unit_price) }}</td>
-                        @if($detail->is_delivered == 1)
-                          <td>
-                            <button type="button" class="btn btn-success btn-block">Terkirim</button>
-                          </td>
-                        @else
-                          <td>
-                            <button type="button" class="btn btn-danger btn-block">Belum Terkirim</button>
-                          </td>
-                        @endif
-                      </tr>
-                      @endforeach
-                    </tbody>
-                  </table>
-                </div>
-                <div class="row">
-                  <div class="col-lg-4 col-sm-5">
-                    <table class="table table-clear">
-                      <tbody>
-                        <tr>
-                          <td class="left">
-                            <strong>Tiga Ratus Empat Puluh Ribu Rupiah</strong>
-                          </td>
-                        </tr>
-                      </tbody>
-                    </table>
-                  </div>
-                  <div class="col-lg-4 col-sm-5 ml-auto">
-                    <table class="table table-clear">
-                      <tbody>
-                        <tr>
-                          <td class="left">
-                            <strong>Total :</strong>
-                          </td>
-                          <td class="right">
-                            <strong>Rp. {{ number_format($page->total_price) }}</strong>
-                          </td>
-                        </tr>
-                      </tbody>
-                    </table>
-                  </div>
-                </div>
-                <div class="d-flex justify-content-between" style="padding: 30px">
-                  <p class="mt-3">PT Centro Links Indonesia</p>
-                  <p class="mt-3">Pengirim</p>
-                </div>
-                <div class="modal-footer">
-                  <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                  <button type="submit" class="btn btn-primary printFaktur">Print</button>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-        @endforeach -->
-
         <!-- Modal !-->
-        @foreach($data as $page)
+        @foreach($data['order'] as $page)
         <div class="modal fade" id="cancelledModal{{ $page->id }}" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
           <form method="post" action="{{url('cancel-order')}}" enctype="multipart/form-data">
             {{csrf_field()}}
@@ -545,6 +677,14 @@
                           @endforeach
                         </tbody>
                       </table>
+                    </div>
+                  </div>
+                  <div class="row">
+                    <div class="col-md-12">
+                      <div class="form-group">
+                        <label for="exampleInputPassword1">Catatan Tambahan</label>
+                        <textarea class="form-control" id="additional_request" name="additional_request" disabled>{{ $page->additional_request }}</textarea>
+                      </div>
                     </div>
                   </div>
                   <div class="row">

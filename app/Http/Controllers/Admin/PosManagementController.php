@@ -36,11 +36,22 @@ class PosManagementController extends Controller
     public function mainTransaction()
     {
         try{
+            $rand_no = rand(100000, 1000000);
+            $last_transaction_id = 0;
+            $last_transaction = Transaction::orderBy('id', 'desc')->first();
+            if(empty($last_transaction)){
+                $last_transaction_id = 0;
+            } else {
+                $last_transaction_id = $last_transaction->id;
+            }
+            $transaction_number = $rand_no.$last_transaction_id;
+            
             $customer = Customer::with(['branch'])->get();
             $product = Product::where('status', 1)->where('branch_id', Auth::user()->branch_id)->get();
             $count_product = Product::where('status', 1)->where('branch_id', Auth::user()->branch_id)->count();
             $product_category = ProductCategory::where('status', 1)->where('branch_id', Auth::user()->branch_id)->get();
             $seat_table = SeatTable::where('branch_id', Auth::user()->branch_id)->get();
+            $branch = Branch::where('id', Auth::user()->branch_id)->first();
             $no = 1;
             foreach($customer as $page){
                 $page->no = $no;
@@ -67,7 +78,9 @@ class PosManagementController extends Controller
                 "product" => $product,
                 "count" => $count_product,
                 "product_category" => $product_category,
-                "seat_table" => $seat_table
+                "seat_table" => $seat_table,
+                "branch" => $branch,
+                "transaction_number" => $transaction_number
             );
             return view('welcome')->with('data', $data);
         
@@ -134,26 +147,19 @@ class PosManagementController extends Controller
             if(isset($request->product_id[0])){
                 $now_date = Carbon::now();
                 $date = Carbon::parse($now_date)->format('Y-m-d');
-                $rand_no = rand(100000, 1000000);
-                $last_transaction_id = 0;
-                $last_transaction = Transaction::orderBy('id', 'desc')->first();
-                if(empty($last_transaction)){
-                    $last_transaction_id = 0;
-                } else {
-                    $last_transaction_id = $last_transaction->id;
-                }
-                $transaction_number = $rand_no.$last_transaction_id;
 
                 $transaction = new Transaction([
-                    'transaction_number' => $transaction_number,
+                    'transaction_number' => $request->transaction_number,
                     'branch_id' => Auth::user()->branch_id,
                     'item_qty' => 0,
                     'total_discount' => 0,
                     'total_ppn' => 0,
                     'total_price' => 0,
                     'total_amount_paid' => 0,
+                    'customer_name' => $request->customer_name,
                     'is_delivered' => 2,
                     'status' => $request->paid_status,
+                    'additional_request' => $request->additional_request,
                     'created_by' => Auth::user()->name
                 ]);
                 $transaction->save();

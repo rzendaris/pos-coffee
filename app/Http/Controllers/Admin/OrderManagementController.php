@@ -14,6 +14,8 @@ use App\Model\Tables\Branch;
 use App\Model\Tables\Transaction;
 use App\Model\Tables\Payment;
 use App\Model\Tables\TransactionDetail;
+use App\Model\Tables\ProductCategory;
+use App\Model\Tables\Product;
 use PDF;
 
 class OrderManagementController extends Controller
@@ -36,8 +38,9 @@ class OrderManagementController extends Controller
     public function allOrder()
     {
         try{
-            $data = Transaction::with(['branch', 'transaction_detail', 'transaction_detail.product'])->where('status','!=', 3)->where('branch_id', Auth::user()->branch_id)->orderBy('id', 'desc')->get();
+            $data = Transaction::with(['branch', 'transaction_detail', 'transaction_detail.product'])->whereDate('created_at', date("Y-m-d"))->where('status','!=', 3)->where('branch_id', Auth::user()->branch_id)->orderBy('id', 'desc')->get();
             $no = 1;
+            $total_transaction = 0;
             foreach($data as $page){
                 $page->no = $no;
 
@@ -52,11 +55,16 @@ class OrderManagementController extends Controller
                 } else {
                     $page->deliver_name = 'Not Delivered';
                 }
+                $total_transaction += $page->total_price;
 
                 $no++;
             }
+            $return_data = array(
+                'transaction' => $data,
+                'total_transaction' => $total_transaction
+            );
 
-            return view('order-list')->with('data', $data);
+            return view('order-list')->with('data', $return_data);
         
         } catch (Exception $e) {
             report($e);
@@ -303,7 +311,8 @@ class OrderManagementController extends Controller
     public function undeliveredOrder()
     {
         try{
-            $data = Transaction::with(['branch', 'transaction_detail', 'transaction_detail.product'])->where('is_delivered', 2)->where('branch_id', Auth::user()->branch_id)->orderBy('id', 'desc')->get();
+            $product_category = ProductCategory::where('status', 1)->where('branch_id', Auth::user()->branch_id)->get();
+            $data = Transaction::with(['branch', 'transaction_detail', 'transaction_detail.product'])->where('is_delivered', 2)->where('branch_id', Auth::user()->branch_id)->whereDate('created_at', Carbon::today())->orderBy('id', 'desc')->get();
             $no = 1;
             foreach($data as $page){
                 $page->no = $no;
@@ -322,8 +331,21 @@ class OrderManagementController extends Controller
 
                 $no++;
             }
+            $product_no = 1;
+            foreach($product_category as $category){
+                $product = Product::where('status', 1)->where('category_id', $category->id)->get();
+                foreach($product as $page){
+                    $page->no = $product_no;
+                    $product_no++;
+                }
+                $category->product = $product;
+            }
+            $return_data = array(
+                "order" => $data,
+                "product_category" => $product_category
+            );
 
-            return view('order-list-undelivered')->with('data', $data);
+            return view('order-list-undelivered')->with('data', $return_data);
         
         } catch (Exception $e) {
             report($e);
@@ -335,7 +357,7 @@ class OrderManagementController extends Controller
     public function deliveredOrderPos()
     {
         try{
-            $data = Transaction::with(['branch', 'transaction_detail', 'transaction_detail.product'])->where('branch_id', Auth::user()->branch_id)->where('is_delivered', 1)->orderBy('id', 'desc')->get();
+            $data = Transaction::with(['branch', 'transaction_detail', 'transaction_detail.product'])->where('branch_id', Auth::user()->branch_id)->where('is_delivered', 1)->whereDate('created_at', Carbon::today())->orderBy('id', 'desc')->get();
             $no = 1;
             foreach($data as $page){
                 $page->no = $no;

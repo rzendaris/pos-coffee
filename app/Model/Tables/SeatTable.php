@@ -24,4 +24,9 @@ class SeatTable extends Model
         'created_at',
         'updated_at',
     ];
+
+    public function branch()
+    {
+        return $this->belongsTo('App\Model\Tables\Branch', 'branch_id', 'id');
+    }
 }

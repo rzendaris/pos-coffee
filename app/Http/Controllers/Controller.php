@@ -23,7 +23,7 @@ class Controller extends BaseController
         }
 
         if($deliver_status){
-            Transaction::where('id', $transaction_id)->update(['is_delivered' => 1]);
+            Transaction::where('id', $transaction_id)->where('status', 1)->update(['is_delivered' => 1]);
         }
         return True;
     }

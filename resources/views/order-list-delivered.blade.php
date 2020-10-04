@@ -69,10 +69,10 @@
                       <th>No</th>
                       <th>Tanggal</th>
                       <th>No. Pesanan</th>
+                      <th>Nama Pelanggan</th>
                       <th>Cabang</th>
                       <th>Total Harga</th>
                       <th>Jumlah Pembayaran</th>
-                      <th>Kembalian</th>
                       <th>Status Pembayaran</th>
                       <th>Aksi</th>
                     </tr>
@@ -92,10 +92,10 @@
                       <td>{{ $page->no }}</td>
                       <td>{{ $page->created_at }}</td>
                       <td><a href="#" class="btn btn-primary">{{ $page->transaction_number }}</a></td>
+                      <td>{{ $page->customer_name }}</td>
                       <td>{{ $page->branch->branch_name }}</td>
                       <td>{{ number_format($page->total_price) }}</td>
                       <td>{{ number_format($page->total_amount_paid) }}</td>
-                      <td>{{ number_format($page->total_price - $page->total_amount_paid) }}</td>
                       <td>{{ $page->status_name }}</td>
                       <td style="width:15%">
                         @if($page->is_delivered == 1)

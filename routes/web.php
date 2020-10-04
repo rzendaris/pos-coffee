@@ -25,6 +25,12 @@ Route::middleware('auth')->group(function() {
     Route::get('pos', 'Admin\PosManagementController@pos');
 
     /**
+     * Dashboard
+     */
+
+    Route::get('dashboard', 'Admin\DashboardController@index');
+
+    /**
      * User Management
      */
 
@@ -45,12 +51,22 @@ Route::middleware('auth')->group(function() {
     Route::post('inactive-product', 'Admin\ItemManagementController@inactiveProduct');
 
     /**
-     * Branch Management
+     * Expense Management
      */
-    Route::get('branch-management', 'Admin\BranchManagementController@mainBranch');
-    Route::get('add-branch', 'Admin\BranchManagementController@addBranch');
-    Route::post('add-branch', 'Admin\BranchManagementController@postBranch');
-    Route::post('update-branch', 'Admin\BranchManagementController@updateBranch');
+
+    Route::get('expense-management', 'Admin\ExpenseManagementController@mainExpense');
+    Route::get('add-expense', 'Admin\ExpenseManagementController@addExpenseView');
+    Route::post('add-expense', 'Admin\ExpenseManagementController@postExpense');
+    // Route::post('update-product', 'Admin\ExpenseManagementController@updateProduct');
+    // Route::post('inactive-product', 'Admin\ExpenseManagementController@inactiveProduct');
+
+    /**
+     * Seat Table Management
+     */
+    Route::get('seat-table-management', 'Admin\SeatTableManagementController@seatTable');
+    Route::post('add-seat-table', 'Admin\SeatTableManagementController@postSeatTable');
+    Route::post('update-seat-table', 'Admin\SeatTableManagementController@updateSeatTable');
+    Route::post('inactive-seat-table', 'Admin\ItemManagementController@inactiveSeatTable');
 
     /**
      * Type Management
@@ -58,14 +74,6 @@ Route::middleware('auth')->group(function() {
     Route::get('category-management', 'Admin\CategoryManagementController@mainCategory');
     Route::post('add-category', 'Admin\CategoryManagementController@postCategory');
     Route::post('update-category', 'Admin\CategoryManagementController@updateCategory');
-
-    /**
-     * Customer Management
-     */
-    Route::get('customer-management', 'Admin\CustomerManagementController@mainCustomer');
-    Route::get('add-customer', 'Admin\CustomerManagementController@addCustomerView');
-    Route::post('add-customer', 'Admin\CustomerManagementController@postCustomer');
-    Route::post('update-customer', 'Admin\CustomerManagementController@updateCustomer');
 
     /**
      * Order & Payment Management
@@ -102,5 +110,6 @@ Route::middleware('auth')->group(function() {
      * Report Management
      */
     Route::get('report-management', 'Admin\ReportManagementController@mainReport');
+    Route::get('new-report-management', 'Admin\ReportManagementController@newReport');
     Route::get('generate-report/{type}', 'Admin\ReportManagementController@generateReport');
 });

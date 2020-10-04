@@ -77,17 +77,8 @@
                       <th>Action</th>
                     </tr>
                   </thead>
-                  <!-- <tfoot>
-                    <tr>
-                      <th>Date</th>
-                      <th>No. Order</th>
-                      <th>Branches</th>
-                      <th>Customer</th>
-                      <th>Action</th>
-                    </tr>
-                  </tfoot> -->
                   <tbody>
-                    @foreach($data as $page)
+                    @foreach($data['transaction'] as $page)
                     <tr>
                       <td>{{ $page->no }}</td>
                       <td>{{ $page->created_at }}</td>
@@ -142,13 +133,25 @@
                 </table>
               </div>
             </div>
+            <div class="card-body">
+              <div class="table-responsive">
+                <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+                  <thead>
+                    <tr>
+                      <th rowspan="4">Total Transaction - {{ date('Y-m-d') }}</th>
+                      <th rowspan="3">Rp. {{ number_format($data['total_transaction']) }}</th>
+                    </tr>
+                  </thead>
+                </table>
+              </div>
+            </div>
           </div>
 
         </div>
         <!-- /.container-fluid -->
 
         <!-- Modal !-->
-        @foreach($data as $page)
+        @foreach($data['transaction'] as $page)
         <div class="modal fade" id="editModal{{ $page->id }}" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
           <form method="post" action="{{url('update-order')}}" enctype="multipart/form-data">
             {{csrf_field()}}
@@ -259,7 +262,7 @@
         @endforeach
 
         <!-- Modal !-->
-        @foreach($data as $page)
+        @foreach($data['transaction'] as $page)
         <div class="modal fade" id="deliveredModal{{ $page->id }}" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
           <form method="post" action="{{url('delivered-order')}}" enctype="multipart/form-data">
             {{csrf_field()}}
@@ -369,7 +372,7 @@
         </div>
         @endforeach
 
-        @foreach($data as $page)
+        @foreach($data['transaction'] as $page)
         <div class="modal fade fakturPrint" id="fakturModal{{ $page->id }}" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
           <div class="container">
             <div class="card">
@@ -466,7 +469,7 @@
         @endforeach
 
         <!-- Modal !-->
-        @foreach($data as $page)
+        @foreach($data['transaction'] as $page)
         <div class="modal fade" id="cancelledModal{{ $page->id }}" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
           <form method="post" action="{{url('cancel-order')}}" enctype="multipart/form-data">
             {{csrf_field()}}

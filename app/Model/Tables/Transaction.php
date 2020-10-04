@@ -24,6 +24,8 @@ class Transaction extends Model
         'total_ppn',
         'total_price',
         'total_amount_paid',
+        'customer_name',
+        'additional_request',
         'is_delivered',
         'status',
         'created_at',

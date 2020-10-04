@@ -63,7 +63,7 @@ class ItemManagementController extends Controller
     public function mainProduct()
     {
         try{
-            $product = Product::with(['category'])->where('status', 1)->get();
+            $product = Product::with(['category'])->where('branch_id', Auth::user()->branch_id)->where('status', 1)->get();
             $no = 1;
             foreach($product as $page){
                 $page->no = $no;
@@ -76,7 +76,7 @@ class ItemManagementController extends Controller
                 $no++;
             }
 
-            $category = ProductCategory::get();
+            $category = ProductCategory::where('branch_id', Auth::user()->branch_id)->get();
 
             $data = array(
                 "category" => $category,
@@ -93,7 +93,7 @@ class ItemManagementController extends Controller
 
     public function addProductView()
     {
-        $category = ProductCategory::get();
+        $category = ProductCategory::where('branch_id', Auth::user()->branch_id)->get();
         $branch = Branch::get();
 
         $data = array(
@@ -113,6 +113,7 @@ class ItemManagementController extends Controller
                 'stock' => $request->get('stock'),
                 'handle_by' => $request->get('handle_by'),
                 'image' => $convertImage['filename'],
+                'branch_id' => Auth::user()->branch_id,
                 'created_by' => Auth::user()->name
             ]);
             $product->save();

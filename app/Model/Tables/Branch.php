@@ -23,6 +23,7 @@ class Branch extends Model
         'email',
         'fax',
         'head_office',
+        'wifi',
         'status',
         'created_at',
         'created_by',

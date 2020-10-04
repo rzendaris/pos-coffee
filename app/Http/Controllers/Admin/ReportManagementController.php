@@ -15,6 +15,7 @@ use App\Model\Tables\Customer;
 use App\Model\Tables\Branch;
 use App\Model\Tables\Transaction;
 use App\Model\Tables\Payment;
+use App\Model\Tables\Expense;
 
 class ReportManagementController extends Controller
 {
@@ -43,15 +44,49 @@ class ReportManagementController extends Controller
                 $from = $request->from;
                 $to = $request->to;
             }
-            // ->where('created_at', '>=', $from)->where('created_at', '<=', $to)
-            $piutang = Transaction::with(['branch'])->where('created_at', '>=', $from)->where('created_at', '<=', $to)->orderBy('id', 'desc')->where('status', 2)->get();
-            $sales = Transaction::with(['branch'])->where('created_at', '>=', $from)->where('created_at', '<=', $to)->orderBy('id', 'desc')->where('status', 1)->get();
-            $payment = Payment::with(['transaction', 'transaction.branch'])->where('created_at', '>=', $from)->where('created_at', '<=', $to)->orderBy('id', 'desc')->where('status', 1)->get();
+            $sales = Transaction::with(['branch', 'transaction_detail', 'transaction_detail.product'])->where('branch_id', Auth::user()->branch_id)->where('created_at', '>=', $from)->where('created_at', '<=', $to)->orderBy('id', 'asc')->get();
+            $expense = Expense::with(['branch'])->where('branch_id', Auth::user()->branch_id)->where('created_at', '>=', $from)->where('created_at', '<=', $to)->orderBy('id', 'asc')->get();
+
+            $no = 1;
+            $total_transaction = 0;
+            foreach($sales as $page){
+                $page->no = $no;
+
+                if($page->status == 1){
+                    $page->status_name = 'Paid';
+                } else {
+                    $page->status_name = 'Not Paid';
+                }
+
+                if($page->is_delivered == 1){
+                    $page->deliver_name = 'Delivered';
+                } else {
+                    $page->deliver_name = 'Not Delivered';
+                }
+                $total_transaction += $page->total_price;
+
+                $no++;
+            }
+            $expense_no = 1;
+            $total_expense = 0;
+            foreach($expense as $page){
+                $page->no = $expense_no;
+
+                if($page->status == 1){
+                    $page->status_name = 'Approved';
+                } else {
+                    $page->status_name = 'Cancelled';
+                }
+                $total_expense += $page->price;
+
+                $expense_no++;
+            }
 
             $data = array(
-                "piutang" => $piutang,
                 "sales" => $sales,
-                "payment" => $payment,
+                "expense" => $expense,
+                "total_transaction" => $total_transaction,
+                "total_expense" => $total_expense,
                 "from" => $from,
                 "to" => $to,
                 "now_date" => $now
@@ -64,6 +99,11 @@ class ReportManagementController extends Controller
             return redirect('report-management');
         }
     }
+    
+    public function newReport(){
+        return view('reporting.report');
+    }
+
     public function generateReport(Request $request, $type)
     {
         try{

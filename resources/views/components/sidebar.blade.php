@@ -1,5 +1,5 @@
 <ul class="navbar-nav bg-gradient-primary sidebar sidebar-dark accordion" id="accordionSidebar">
-      <a class="sidebar-brand d-flex align-items-center justify-content-center" href="index.html">
+      <a class="sidebar-brand d-flex align-items-center justify-content-center" href="#">
         <div class="sidebar-brand-icon rotate-n-15">
           <i class="fas fa-laugh-wink"></i>
         </div>
@@ -36,34 +36,44 @@
             POS Management
           </div>
           <li class="nav-item">
+            <a class="nav-link" href="{{url('dashboard')}}">
+              <i class="fas fa-fw fa-table"></i>
+              <span>Dashboard</span></a>
+          </li>
+          <li class="nav-item">
             <a class="nav-link" href="{{url('user-management')}}">
               <i class="fas fa-fw fa-table"></i>
               <span>User Management</span></a>
           </li>
-          <!-- <li class="nav-item">
-            <a class="nav-link" href="{{url('branch-management')}}">
-              <i class="fas fa-fw fa-table"></i>
-              <span>Branch Management</span></a>
-          </li> -->
           <li class="nav-item">
             <a class="nav-link" href="{{url('category-management')}}">
               <i class="fas fa-fw fa-table"></i>
-              <span>Category Management</span></a>
+              <span>Kategori Management</span></a>
           </li>
           <li class="nav-item">
             <a class="nav-link" href="{{url('/item-management')}}">
               <i class="fas fa-fw fa-table"></i>
-              <span>Items Management</span></a>
+              <span>Produk Management</span></a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="{{url('/seat-table-management')}}">
+              <i class="fas fa-fw fa-table"></i>
+              <span>Seat Table Management</span></a>
           </li>
           <li class="nav-item">
             <a class="nav-link" href="{{url('order-list')}}">
               <i class="fas fa-fw fa-chart-area"></i>
-              <span>Transaction</span></a>
+              <span>Transaksi</span></a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="{{url('expense-management')}}">
+              <i class="fas fa-fw fa-chart-area"></i>
+              <span>Pengeluaran</span></a>
           </li>
           <li class="nav-item">
             <a class="nav-link" href="{{url('report-management')}}">
               <i class="fas fa-fw fa-chart-area"></i>
-              <span>Report Management</span></a>
+              <span>Laporan</span></a>
           </li>
         </div>
         @elseif(env('DEPLOYMENT_ENV') == 'BARISTA')
